@@ -231,6 +231,9 @@
       padding: 10px;
       border-radius: 5px;
       margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .history-item a {
@@ -240,6 +243,50 @@
 
     .history-item a:hover {
       text-decoration: underline;
+    }
+
+    .history-item button {
+      background: #ff6b6b;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s ease;
+    }
+
+    .history-item button:hover {
+      background: #ff5252;
+    }
+
+    /* Validation Message */
+    #validationMessage {
+      color: red;
+      display: none;
+      margin-top: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .upload-box p {
+        font-size: 0.9rem;
+      }
+
+      .upload-box i {
+        font-size: 2rem;
+      }
+
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -252,10 +299,21 @@
       <p>Drag & Drop, Paste, or Click to Upload</p>
       <input type="file" id="fileInput" accept="image/*" multiple>
     </div>
+    <div id="validationMessage"></div>
     <div class="cropper-container" id="cropperContainer" style="display: none;">
       <img id="cropperImage" src="#" alt="Cropper Image">
     </div>
-    <button id="cropButton" style="display: none;">Crop & Upload</button>
+    <div class="crop-controls" id="cropControls" style="display: none;">
+      <button id="cropButton">Crop & Upload</button>
+      <button id="undoButton" disabled>Undo</button>
+      <button id="redoButton" disabled>Redo</button>
+      <select id="cropRatio">
+        <option value="1">1:1</option>
+        <option value="1.777">16:9</option>
+        <option value="1.333">4:3</option>
+        <option value="0">Free</option>
+      </select>
+    </div>
     <div class="preview" id="preview">
       <img id="previewImage" src="#" alt="Preview">
     </div>
@@ -295,10 +353,16 @@
     const cropperContainer = document.getElementById('cropperContainer');
     const cropperImage = document.getElementById('cropperImage');
     const cropButton = document.getElementById('cropButton');
+    const undoButton = document.getElementById('undoButton');
+    const redoButton = document.getElementById('redoButton');
+    const cropRatio = document.getElementById('cropRatio');
     const historyList = document.getElementById('historyList');
+    const validationMessage = document.getElementById('validationMessage');
 
     let currentFile = null;
     let cropper;
+    let cropHistory = [];
+    let historyIndex = -1;
 
     // Theme Toggle
     const themeToggle = document.getElementById('themeToggle');
@@ -319,8 +383,10 @@
     uploadBox.addEventListener('drop', (e) => {
       e.preventDefault();
       uploadBox.style.background = 'transparent';
-      const file = e.dataTransfer.files[0];
-      handleFile(file);
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        Array.from(files).forEach(file => handleFile(file));
+      }
     });
 
     // Paste from Clipboard
@@ -343,15 +409,18 @@
       const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
 
       if (!ALLOWED_TYPES.includes(file.type)) {
-        alert('Only JPEG, PNG, and GIF files are allowed.');
+        validationMessage.innerText = 'Only JPEG, PNG, and GIF files are allowed.';
+        validationMessage.style.display = 'block';
         return;
       }
 
       if (file.size > MAX_SIZE) {
-        alert('File size must be less than 5MB.');
+        validationMessage.innerText = 'File size must be less than 5MB.';
+        validationMessage.style.display = 'block';
         return;
       }
 
+      validationMessage.style.display = 'none';
       currentFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -361,15 +430,63 @@
         // Initialize Cropper.js
         cropperImage.src = e.target.result;
         cropperContainer.style.display = 'block';
-        cropButton.style.display = 'block';
+        document.getElementById('cropControls').style.display = 'block';
 
         cropper = new Cropper(cropperImage, {
-          aspectRatio: 1, // Square crop
+          aspectRatio: 1, // Default to square crop
           viewMode: 1,
+          crop: () => {
+            updateCropHistory();
+          },
         });
+
+        cropHistory = [];
+        historyIndex = -1;
+        updateCropHistory();
       };
       reader.readAsDataURL(file);
     }
+
+    // Update Crop History
+    function updateCropHistory() {
+      const canvas = cropper.getCroppedCanvas();
+      if (canvas) {
+        cropHistory = cropHistory.slice(0, historyIndex + 1);
+        cropHistory.push(canvas.toDataURL());
+        historyIndex++;
+        updateUndoRedoButtons();
+      }
+    }
+
+    // Undo Crop
+    undoButton.addEventListener('click', () => {
+      if (historyIndex > 0) {
+        historyIndex--;
+        cropper.replace(cropHistory[historyIndex]);
+        updateUndoRedoButtons();
+      }
+    });
+
+    // Redo Crop
+    redoButton.addEventListener('click', () => {
+      if (historyIndex < cropHistory.length - 1) {
+        historyIndex++;
+        cropper.replace(cropHistory[historyIndex]);
+        updateUndoRedoButtons();
+      }
+    });
+
+    // Update Undo/Redo Buttons
+    function updateUndoRedoButtons() {
+      undoButton.disabled = historyIndex <= 0;
+      redoButton.disabled = historyIndex >= cropHistory.length - 1;
+    }
+
+    // Change Crop Ratio
+    cropRatio.addEventListener('change', () => {
+      const ratio = parseFloat(cropRatio.value);
+      cropper.setAspectRatio(ratio || NaN);
+    });
 
     // Crop & Upload
     cropButton.addEventListener('click', () => {
@@ -377,7 +494,7 @@
       croppedCanvas.toBlob((blob) => {
         const croppedFile = new File([blob], 'cropped-image.png', { type: 'image/png' });
         uploadImage(croppedFile);
-      });
+      }, 'image/png', 0.8); // Compress image to 80% quality
     });
 
     // Upload Image to ImgBB
@@ -419,56 +536,4 @@
     }
 
     // Add to Upload History
-    let uploadHistory = JSON.parse(localStorage.getItem('uploadHistory')) || [];
-
-    function addToHistory(url) {
-      uploadHistory.push(url);
-      localStorage.setItem('uploadHistory', JSON.stringify(uploadHistory));
-      displayHistory();
-    }
-
-    function displayHistory() {
-      historyList.innerHTML = uploadHistory.map(url => `
-        <div class="history-item">
-          <a href="${url}" target="_blank">${url}</a>
-        </div>
-      `).join('');
-    }
-
-    // Copy Link to Clipboard
-    function copyToClipboard() {
-      const link = result.querySelector('a').href;
-      navigator.clipboard.writeText(link).then(() => {
-        alert('Link copied to clipboard!');
-      }).catch(() => {
-        alert('Failed to copy link.');
-      });
-    }
-
-    // Retry Upload
-    function retryUpload() {
-      if (currentFile) {
-        uploadImage(currentFile);
-      }
-    }
-
-    // Reset Uploader
-    function resetUploader() {
-      fileInput.value = '';
-      preview.style.display = 'none';
-      result.innerHTML = '';
-      copyLink.style.display = 'none';
-      uploadAnother.style.display = 'none';
-      tryAgain.style.display = 'none';
-      progressBar.style.display = 'none';
-      progress.style.width = '0';
-      cropperContainer.style.display = 'none';
-      cropButton.style.display = 'none';
-      currentFile = null;
-    }
-
-    // Display History on Page Load
-    displayHistory();
-  </script>
-</body>
-</html>
+    let uploadHistory = JSON.parse
