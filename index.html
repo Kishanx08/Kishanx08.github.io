@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kishan's Futuristic Image Uploader</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <title>Kishan's Image Uploader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     /* General Styles */
     body {
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      background: #0a0a0a;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
       color: #fff;
       display: flex;
       justify-content: center;
@@ -21,43 +21,37 @@
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
-      border-radius: 20px;
+      border-radius: 15px;
       padding: 30px;
       width: 90%;
       max-width: 500px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-      border: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
     h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.5rem;
+      font-size: 2rem;
       margin-bottom: 20px;
-      color: #00ffff;
-      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
     }
 
     .upload-box {
-      border: 2px dashed #00ffff;
-      border-radius: 15px;
-      padding: 30px;
+      border: 2px dashed #fff;
+      border-radius: 10px;
+      padding: 20px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      background: rgba(0, 255, 255, 0.05);
+      transition: background 0.3s ease;
+      position: relative;
     }
 
     .upload-box:hover {
-      background: rgba(0, 255, 255, 0.1);
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .upload-box p {
       margin: 0;
-      font-size: 1.1rem;
-      color: #00ffff;
+      font-size: 1rem;
     }
 
     .upload-box input {
@@ -66,9 +60,8 @@
 
     .upload-box i {
       font-size: 3rem;
-      margin-bottom: 15px;
-      color: #00ffff;
-      text-shadow: 0 0 10px #00ffff;
+      margin-bottom: 10px;
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .preview {
@@ -79,8 +72,6 @@
     .preview img {
       max-width: 100%;
       border-radius: 10px;
-      border: 2px solid #00ffff;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
     .result {
@@ -88,19 +79,36 @@
     }
 
     .result a {
-      color: #00ffff;
+      color: #fff;
       text-decoration: none;
-      background: rgba(0, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.2);
       padding: 10px 20px;
       border-radius: 5px;
       transition: background 0.3s ease;
-      display: inline-block;
-      margin-top: 10px;
     }
 
     .result a:hover {
-      background: rgba(0, 255, 255, 0.2);
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .copy-link {
+      margin-top: 10px;
+      display: none;
+    }
+
+    .copy-link button {
+      background: #fff;
+      color: #6a11cb;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .copy-link button:hover {
+      background: #f0f0f0;
     }
 
     .upload-another {
@@ -109,26 +117,24 @@
     }
 
     .upload-another button {
-      background: #00ffff;
-      color: #0a0a0a;
+      background: #fff;
+      color: #6a11cb;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
       font-size: 1rem;
-      font-weight: 500;
-      transition: all 0.3s ease;
+      transition: background 0.3s ease;
     }
 
     .upload-another button:hover {
-      background: #00cccc;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      background: #f0f0f0;
     }
 
     /* Loading Animation */
     .loader {
-      border: 4px solid rgba(0, 255, 255, 0.2);
-      border-top: 4px solid #00ffff;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #6a11cb;
       border-radius: 50%;
       width: 30px;
       height: 30px;
@@ -156,6 +162,9 @@
     </div>
     <div class="loader" id="loader"></div>
     <div class="result" id="result"></div>
+    <div class="copy-link" id="copyLink">
+      <button onclick="copyToClipboard()">Copy Link</button>
+    </div>
     <div class="upload-another" id="uploadAnother">
       <button onclick="resetUploader()">Upload Another Image</button>
     </div>
@@ -168,24 +177,22 @@
     const previewImage = document.getElementById('previewImage');
     const loader = document.getElementById('loader');
     const result = document.getElementById('result');
+    const copyLink = document.getElementById('copyLink');
     const uploadAnother = document.getElementById('uploadAnother');
 
     // Drag-and-Drop Support
     uploadBox.addEventListener('dragover', (e) => {
       e.preventDefault();
-      uploadBox.style.background = 'rgba(0, 255, 255, 0.1)';
-      uploadBox.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.4)';
+      uploadBox.style.background = 'rgba(255, 255, 255, 0.2)';
     });
 
     uploadBox.addEventListener('dragleave', () => {
-      uploadBox.style.background = 'rgba(0, 255, 255, 0.05)';
-      uploadBox.style.boxShadow = 'none';
+      uploadBox.style.background = 'transparent';
     });
 
     uploadBox.addEventListener('drop', (e) => {
       e.preventDefault();
-      uploadBox.style.background = 'rgba(0, 255, 255, 0.05)';
-      uploadBox.style.boxShadow = 'none';
+      uploadBox.style.background = 'transparent';
       const file = e.dataTransfer.files[0];
       handleFile(file);
     });
@@ -215,12 +222,13 @@
 
     // Upload Image to ImgBB
     async function uploadImage(file) {
-      const API_KEY = "a42d5a374e86bb7a13b3daf1e7a02ae7"; // Replace with your ImgBB API key
+      const API_KEY = "YOUR_IMGBB_API_KEY"; // Replace with your ImgBB API key
       const formData = new FormData();
       formData.append('image', file);
 
       loader.style.display = 'block';
       result.innerHTML = '';
+      copyLink.style.display = 'none';
       uploadAnother.style.display = 'none';
 
       try {
@@ -231,6 +239,7 @@
         const data = await response.json();
         const imageUrl = data.data.url;
         result.innerHTML = `<a href="${imageUrl}" target="_blank">${imageUrl}</a>`;
+        copyLink.style.display = 'block';
       } catch (error) {
         result.innerHTML = 'Upload failed. Please try again.';
       } finally {
@@ -239,11 +248,22 @@
       }
     }
 
+    // Copy Link to Clipboard
+    function copyToClipboard() {
+      const link = result.querySelector('a').href;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('Link copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy link.');
+      });
+    }
+
     // Reset Uploader
     function resetUploader() {
       fileInput.value = '';
       preview.style.display = 'none';
       result.innerHTML = '';
+      copyLink.style.display = 'none';
       uploadAnother.style.display = 'none';
     }
   </script>
