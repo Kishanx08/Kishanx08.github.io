@@ -3,55 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kishan's Unique Image Uploader</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Kishan's Futuristic Image Uploader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     /* General Styles */
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      background: #0a0a0a;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
-      border-radius: 15px;
+      border-radius: 20px;
       padding: 30px;
       width: 90%;
       max-width: 500px;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.2);
     }
 
     h1 {
-      font-size: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
       margin-bottom: 20px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
     }
 
     .upload-box {
-      border: 2px dashed #fff;
-      border-radius: 10px;
-      padding: 20px;
+      border: 2px dashed #00ffff;
+      border-radius: 15px;
+      padding: 30px;
       cursor: pointer;
-      transition: background 0.3s ease;
-      position: relative;
+      transition: all 0.3s ease;
+      background: rgba(0, 255, 255, 0.05);
     }
 
     .upload-box:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(0, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
     }
 
     .upload-box p {
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      color: #00ffff;
     }
 
     .upload-box input {
@@ -60,8 +66,9 @@
 
     .upload-box i {
       font-size: 3rem;
-      margin-bottom: 10px;
-      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 15px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
     }
 
     .preview {
@@ -72,6 +79,8 @@
     .preview img {
       max-width: 100%;
       border-radius: 10px;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
     .result {
@@ -79,16 +88,19 @@
     }
 
     .result a {
-      color: #fff;
+      color: #00ffff;
       text-decoration: none;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(0, 255, 255, 0.1);
       padding: 10px 20px;
       border-radius: 5px;
       transition: background 0.3s ease;
+      display: inline-block;
+      margin-top: 10px;
     }
 
     .result a:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
     .upload-another {
@@ -97,24 +109,26 @@
     }
 
     .upload-another button {
-      background: #fff;
-      color: #6a11cb;
+      background: #00ffff;
+      color: #0a0a0a;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
       font-size: 1rem;
-      transition: background 0.3s ease;
+      font-weight: 500;
+      transition: all 0.3s ease;
     }
 
     .upload-another button:hover {
-      background: #f0f0f0;
+      background: #00cccc;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
     /* Loading Animation */
     .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #6a11cb;
+      border: 4px solid rgba(0, 255, 255, 0.2);
+      border-top: 4px solid #00ffff;
       border-radius: 50%;
       width: 30px;
       height: 30px;
@@ -131,10 +145,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>Kishan's Unique Image Uploader</h1>
+    <h1>Kishan's Image Uploader</h1>
     <div class="upload-box" id="uploadBox">
       <i class="fas fa-cloud-upload-alt"></i>
-      <p>Drag & Drop or Click to Upload</p>
+      <p>Drag & Drop, Paste, or Click to Upload</p>
       <input type="file" id="fileInput" accept="image/*">
     </div>
     <div class="preview" id="preview">
@@ -159,16 +173,19 @@
     // Drag-and-Drop Support
     uploadBox.addEventListener('dragover', (e) => {
       e.preventDefault();
-      uploadBox.style.background = 'rgba(255, 255, 255, 0.2)';
+      uploadBox.style.background = 'rgba(0, 255, 255, 0.1)';
+      uploadBox.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.4)';
     });
 
     uploadBox.addEventListener('dragleave', () => {
-      uploadBox.style.background = 'transparent';
+      uploadBox.style.background = 'rgba(0, 255, 255, 0.05)';
+      uploadBox.style.boxShadow = 'none';
     });
 
     uploadBox.addEventListener('drop', (e) => {
       e.preventDefault();
-      uploadBox.style.background = 'transparent';
+      uploadBox.style.background = 'rgba(0, 255, 255, 0.05)';
+      uploadBox.style.boxShadow = 'none';
       const file = e.dataTransfer.files[0];
       handleFile(file);
     });
@@ -229,48 +246,6 @@
       result.innerHTML = '';
       uploadAnother.style.display = 'none';
     }
-<div class="feedback-section">
-    <h2>Feedback</h2>
-    <form class="feedback-form" id="feedbackForm">
-      <input type="text" id="feedbackName" placeholder="Your Name" required>
-      <textarea id="feedbackMessage" placeholder="Your Feedback" rows="4" required></textarea>
-      <button type="submit">Submit Feedback</button>
-    </form>
-    <div class="feedback-list" id="feedbackList"></div>
-  </div>
-
-  <script>
-    // Feedback Form Submission
-    const feedbackForm = document.getElementById('feedbackForm');
-    const feedbackList = document.getElementById('feedbackList');
-
-    // Load saved feedback from local storage
-    function loadFeedback() {
-      const feedback = JSON.parse(localStorage.getItem('feedback')) || [];
-      feedbackList.innerHTML = feedback.map(item => `
-        <div class="feedback-item">
-          <h3>${item.name}</h3>
-          <p>${item.message}</p>
-        </div>
-      `).join('');
-    }
-
-    // Save feedback to local storage
-    feedbackForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('feedbackName').value;
-      const message = document.getElementById('feedbackMessage').value;
-
-      const feedback = JSON.parse(localStorage.getItem('feedback')) || [];
-      feedback.push({ name, message });
-      localStorage.setItem('feedback', JSON.stringify(feedback));
-
-      feedbackForm.reset();
-      loadFeedback();
-    });
-
-    // Load feedback on page load
-    loadFeedback();
   </script>
 </body>
 </html>
