@@ -12,12 +12,17 @@
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      background: linear-gradient(135deg, #6a11cb, #2575fc); /* Blue gradient */
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: #1a1a1a; /* Matte black for dark theme */
     }
 
     .container {
@@ -29,6 +34,11 @@
       max-width: 500px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    body.dark-mode .container {
+      background: rgba(0, 0, 0, 0.5); /* Darker container for dark theme */
     }
 
     h1 {
@@ -167,9 +177,29 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      color: #6a11cb;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: #f0f0f0;
+    }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
   <div class="container">
     <h1>Kishan's Image Uploader</h1>
     <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
@@ -204,7 +234,13 @@
     const uploadAnother = document.getElementById('uploadAnother');
     const tryAgain = document.getElementById('tryAgain');
 
-    let currentFile = null; // Store the current file for retry
+    let currentFile = null;
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
 
     // Drag-and-Drop Support
     uploadBox.addEventListener('dragover', (e) => {
@@ -237,7 +273,20 @@
 
     // Handle File Upload
     function handleFile(file) {
-      currentFile = file; // Store the file for retry
+      const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        alert('Only JPEG, PNG, and GIF files are allowed.');
+        return;
+      }
+
+      if (file.size > MAX_SIZE) {
+        alert('File size must be less than 5MB.');
+        return;
+      }
+
+      currentFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
         previewImage.src = e.target.result;
@@ -277,13 +326,6 @@
       }
     }
 
-    // Retry Upload
-    function retryUpload() {
-      if (currentFile) {
-        uploadImage(currentFile);
-      }
-    }
-
     // Copy Link to Clipboard
     function copyToClipboard() {
       const link = result.querySelector('a').href;
@@ -292,6 +334,13 @@
       }).catch(() => {
         alert('Failed to copy link.');
       });
+    }
+
+    // Retry Upload
+    function retryUpload() {
+      if (currentFile) {
+        uploadImage(currentFile);
+      }
     }
 
     // Reset Uploader
