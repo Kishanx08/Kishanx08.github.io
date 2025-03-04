@@ -229,6 +229,48 @@
       result.innerHTML = '';
       uploadAnother.style.display = 'none';
     }
+<div class="feedback-section">
+    <h2>Feedback</h2>
+    <form class="feedback-form" id="feedbackForm">
+      <input type="text" id="feedbackName" placeholder="Your Name" required>
+      <textarea id="feedbackMessage" placeholder="Your Feedback" rows="4" required></textarea>
+      <button type="submit">Submit Feedback</button>
+    </form>
+    <div class="feedback-list" id="feedbackList"></div>
+  </div>
+
+  <script>
+    // Feedback Form Submission
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackList = document.getElementById('feedbackList');
+
+    // Load saved feedback from local storage
+    function loadFeedback() {
+      const feedback = JSON.parse(localStorage.getItem('feedback')) || [];
+      feedbackList.innerHTML = feedback.map(item => `
+        <div class="feedback-item">
+          <h3>${item.name}</h3>
+          <p>${item.message}</p>
+        </div>
+      `).join('');
+    }
+
+    // Save feedback to local storage
+    feedbackForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('feedbackName').value;
+      const message = document.getElementById('feedbackMessage').value;
+
+      const feedback = JSON.parse(localStorage.getItem('feedback')) || [];
+      feedback.push({ name, message });
+      localStorage.setItem('feedback', JSON.stringify(feedback));
+
+      feedbackForm.reset();
+      loadFeedback();
+    });
+
+    // Load feedback on page load
+    loadFeedback();
   </script>
 </body>
 </html>
