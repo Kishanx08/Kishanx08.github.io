@@ -60,26 +60,14 @@
       font-weight: 600;
     }
 
-    .admin-panel {
-      margin-top: 30px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      padding-top: 20px;
-    }
-
     .history-item {
       margin: 10px 0;
       padding: 10px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
-    }
-
-    .history-item a {
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .history-item a:hover {
-      text-decoration: underline;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .admin-login-toggle {
@@ -92,12 +80,11 @@
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 1rem;
     }
   </style>
 </head>
 <body>
-  <!-- Admin Login Toggle Button -->
+  <!-- Admin Login Toggle -->
   <button class="admin-login-toggle" id="adminLoginToggle">Admin Login</button>
 
   <div class="container">
@@ -111,6 +98,7 @@
       </div>
       <div class="history" id="userHistory">
         <h2>Your Uploads</h2>
+        <button onclick="clearUserHistory()">Clear My History</button>
         <div class="history-list" id="userHistoryList"></div>
       </div>
     </div>
@@ -125,56 +113,51 @@
 
     <!-- Admin Interface -->
     <div id="adminInterface" style="display: none;">
-      <h1>Admin Panel</h1>
+      <h1>Admin Panel 👑</h1>
+      <button onclick="logoutAdmin()">Logout</button>
+      <button onclick="clearAllHistory()" style="background: #ff6b6b; color: white;">Clear All History</button>
       <div class="history" id="adminHistory">
-        <h2>All Uploads</h2>
+        <h2>All User Uploads</h2>
         <div class="history-list" id="adminHistoryList"></div>
       </div>
-      <button onclick="logoutAdmin()">Logout</button>
     </div>
   </div>
 
   <script>
-    // Admin credentials (Change these!)
+    // Admin credentials
     const ADMIN_CREDENTIALS = {
-      username: "admin",
-      password: "MasterPassword123"
+      username: "kishan09",
+      password: "kishan09"
     };
 
     // DOM Elements
     const userInterface = document.getElementById('userInterface');
     const adminLoginForm = document.getElementById('adminLoginForm');
     const adminInterface = document.getElementById('adminInterface');
-    const userHistoryList = document.getElementById('userHistoryList');
-    const adminHistoryList = document.getElementById('adminHistoryList');
     const adminLoginToggle = document.getElementById('adminLoginToggle');
 
-    // Toggle Admin Login Form
+    // Toggle Admin Login
     adminLoginToggle.addEventListener('click', () => {
       adminLoginForm.style.display = 'block';
       userInterface.style.display = 'none';
       adminInterface.style.display = 'none';
     });
 
-    // Regular user upload functionality
-    const fileInput = document.getElementById('fileInput');
-    fileInput.addEventListener('change', (e) => {
-      const files = e.target.files;
-      Array.from(files).forEach(file => handleFile(file));
+    // File Upload Handling
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      Array.from(e.target.files).forEach(file => handleFile(file));
     });
 
-    // Handle file upload
     function handleFile(file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        uploadImage(file);
+      reader.onload = async (e) => {
+        await uploadImage(file);
       };
       reader.readAsDataURL(file);
     }
 
-    // Upload image to ImgBB
     async function uploadImage(file) {
-      const API_KEY = "a42d5a374e86bb7a13b3daf1e7a02ae7"; // Replace with your ImgBB API key
+      const API_KEY = "a42d5a374e86bb7a13b3daf1e7a02ae7";
       const formData = new FormData();
       formData.append('image', file);
 
@@ -186,76 +169,90 @@
 
         const data = await response.json();
         if (data.success) {
-          addToUserHistory(data.data.url);
-          addToAdminHistory(data.data.url);
+          updateHistory(data.data.url);
         }
       } catch (error) {
-        console.error('Upload error:', error);
+        console.error('Upload failed:', error);
       }
     }
 
-    // Add to user's history
-    function addToUserHistory(url) {
+    // History Management
+    function updateHistory(url) {
+      // User history
       let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
       userHistory.unshift(url);
       localStorage.setItem('userHistory', JSON.stringify(userHistory));
-      displayUserHistory();
-    }
-
-    // Add to admin's history (all uploads)
-    function addToAdminHistory(url) {
+      
+      // Admin history
       let adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
       adminHistory.unshift(url);
       localStorage.setItem('adminHistory', JSON.stringify(adminHistory));
-      if (adminInterface.style.display === 'block') {
-        displayAdminHistory();
-      }
+
+      displayHistories();
     }
 
-    // Display user's history
-    function displayUserHistory() {
-      let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
-      userHistoryList.innerHTML = userHistory.map(url => `
+    function displayHistories() {
+      // User history
+      const userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
+      document.getElementById('userHistoryList').innerHTML = userHistory.map(url => `
         <div class="history-item">
           <a href="${url}" target="_blank">${url}</a>
+          <button onclick="deleteSingleItem('${url}')">Delete</button>
+        </div>
+      `).join('');
+
+      // Admin history
+      const adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
+      document.getElementById('adminHistoryList').innerHTML = adminHistory.map(url => `
+        <div class="history-item">
+          <a href="${url}" target="_blank">${url}</a>
+          <span>Uploaded by User</span>
         </div>
       `).join('');
     }
 
-    // Display admin's history (all uploads)
-    function displayAdminHistory() {
-      let adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
-      adminHistoryList.innerHTML = adminHistory.map(url => `
-        <div class="history-item">
-          <a href="${url}" target="_blank">${url}</a>
-        </div>
-      `).join('');
-    }
-
-    // Admin login
+    // Admin Functions
     function adminLogin() {
       const username = document.getElementById('adminUsername').value;
       const password = document.getElementById('adminPassword').value;
 
-      if (username === kishan09.username && password === kishan09.password) {
+      if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
         userInterface.style.display = 'none';
         adminLoginForm.style.display = 'none';
         adminInterface.style.display = 'block';
-        displayAdminHistory();
+        displayHistories();
       } else {
-        alert('Invalid credentials');
+        alert('Invalid credentials!');
       }
     }
 
-    // Admin logout
     function logoutAdmin() {
       userInterface.style.display = 'block';
-      adminLoginForm.style.display = 'none';
       adminInterface.style.display = 'none';
+      adminLoginForm.style.display = 'none';
     }
 
-    // Display user's history on page load
-    displayUserHistory();
+    function clearAllHistory() {
+      localStorage.removeItem('userHistory');
+      localStorage.removeItem('adminHistory');
+      displayHistories();
+    }
+
+    // User Functions
+    function clearUserHistory() {
+      localStorage.removeItem('userHistory');
+      displayHistories();
+    }
+
+    function deleteSingleItem(url) {
+      let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
+      userHistory = userHistory.filter(item => item !== url);
+      localStorage.setItem('userHistory', JSON.stringify(userHistory));
+      displayHistories();
+    }
+
+    // Initial Load
+    displayHistories();
   </script>
 </body>
 </html>
