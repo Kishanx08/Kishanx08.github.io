@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kishan's Image Uploader</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     /* General Styles */
@@ -19,11 +18,6 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    body.dark-mode {
-      background: #1a1a1a;
     }
 
     .container {
@@ -35,16 +29,6 @@
       max-width: 500px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      transition: background 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    body.dark-mode .container {
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 20px;
     }
 
     .upload-box {
@@ -52,181 +36,41 @@
       border-radius: 10px;
       padding: 20px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      margin: 20px 0;
     }
 
-    .upload-box:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .upload-box p {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    .upload-box input {
-      display: none;
-    }
-
-    .upload-box i {
-      font-size: 3rem;
-      margin-bottom: 10px;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .preview {
-      margin-top: 20px;
-      display: none;
-    }
-
-    .preview img {
-      max-width: 100%;
-      border-radius: 10px;
-    }
-
-    .progress-bar {
-      margin-top: 20px;
+    input[type="text"], input[type="password"] {
       width: 100%;
-      height: 10px;
-      background: rgba(255, 255, 255, 0.2);
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
       border-radius: 5px;
-      display: none;
-    }
-
-    .progress {
-      height: 100%;
-      background: #00ffff;
-      border-radius: 5px;
-      width: 0;
-      transition: width 0.3s ease;
-    }
-
-    .result {
-      margin-top: 20px;
-    }
-
-    .result a {
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 10px 20px;
-      border-radius: 5px;
-      transition: background 0.3s ease;
     }
 
-    .result a:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .copy-link {
-      margin-top: 10px;
-      display: none;
-    }
-
-    .copy-link button {
+    button {
       background: #fff;
       color: #6a11cb;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s ease;
+      margin: 10px;
+      font-weight: 600;
     }
 
-    .copy-link button:hover {
-      background: #f0f0f0;
-    }
-
-    .upload-another {
-      margin-top: 20px;
-      display: none;
-    }
-
-    .upload-another button {
-      background: #fff;
-      color: #6a11cb;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-    }
-
-    .upload-another button:hover {
-      background: #f0f0f0;
-    }
-
-    .try-again {
-      margin-top: 20px;
-      display: none;
-    }
-
-    .try-again button {
-      background: #ff6b6b;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-    }
-
-    .try-again button:hover {
-      background: #ff5252;
-    }
-
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #6a11cb;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-      display: none;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #fff;
-      color: #6a11cb;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-    }
-
-    .theme-toggle:hover {
-      background: #f0f0f0;
-    }
-
-    .history {
+    .admin-panel {
       margin-top: 30px;
-      text-align: left;
-    }
-
-    .history h2 {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding-top: 20px;
     }
 
     .history-item {
-      background: rgba(255, 255, 255, 0.1);
+      margin: 10px 0;
       padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
-      margin-bottom: 10px;
     }
 
     .history-item a {
@@ -237,144 +81,98 @@
     .history-item a:hover {
       text-decoration: underline;
     }
+
+    .admin-login-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      color: #6a11cb;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+  <!-- Admin Login Toggle Button -->
+  <button class="admin-login-toggle" id="adminLoginToggle">Admin Login</button>
+
   <div class="container">
-    <h1>Kishan's Image Uploader</h1>
-    <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
-      <i class="fas fa-cloud-upload-alt"></i>
-      <p>Drag & Drop, Paste, or Click to Upload</p>
-      <input type="file" id="fileInput" accept="image/*">
+    <!-- Regular User Interface -->
+    <div id="userInterface">
+      <h1>Kishan's Image Uploader</h1>
+      <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Click to Upload</p>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+      </div>
+      <div class="history" id="userHistory">
+        <h2>Your Uploads</h2>
+        <div class="history-list" id="userHistoryList"></div>
+      </div>
     </div>
-    <div class="cropper-container" id="cropperContainer" style="display: none;">
-      <img id="cropperImage" src="#" alt="Cropper Image">
+
+    <!-- Admin Login Form -->
+    <div id="adminLoginForm" style="display: none;">
+      <h1>Admin Login</h1>
+      <input type="text" id="adminUsername" placeholder="Username">
+      <input type="password" id="adminPassword" placeholder="Password">
+      <button onclick="adminLogin()">Login</button>
     </div>
-    <button id="cropButton" style="display: none;">Crop & Upload</button>
-    <div class="preview" id="preview">
-      <img id="previewImage" src="#" alt="Preview">
-    </div>
-    <div class="progress-bar" id="progressBar">
-      <div class="progress" id="progress"></div>
-    </div>
-    <div class="loader" id="loader"></div>
-    <div class="result" id="result"></div>
-    <div class="copy-link" id="copyLink">
-      <button onclick="copyToClipboard()">Copy Link</button>
-    </div>
-    <div class="upload-another" id="uploadAnother">
-      <button onclick="resetUploader()">Upload Another Image</button>
-    </div>
-    <div class="try-again" id="tryAgain">
-      <button onclick="retryUpload()">Try Again</button>
-    </div>
-    <div class="history" id="history">
-      <h2>Upload History</h2>
-      <div class="history-list" id="historyList"></div>
+
+    <!-- Admin Interface -->
+    <div id="adminInterface" style="display: none;">
+      <h1>Admin Panel</h1>
+      <div class="history" id="adminHistory">
+        <h2>All Uploads</h2>
+        <div class="history-list" id="adminHistoryList"></div>
+      </div>
+      <button onclick="logoutAdmin()">Logout</button>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script>
+    // Admin credentials (Change these!)
+    const ADMIN_CREDENTIALS = {
+      username: "admin",
+      password: "MasterPassword123"
+    };
+
+    // DOM Elements
+    const userInterface = document.getElementById('userInterface');
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const adminInterface = document.getElementById('adminInterface');
+    const userHistoryList = document.getElementById('userHistoryList');
+    const adminHistoryList = document.getElementById('adminHistoryList');
+    const adminLoginToggle = document.getElementById('adminLoginToggle');
+
+    // Toggle Admin Login Form
+    adminLoginToggle.addEventListener('click', () => {
+      adminLoginForm.style.display = 'block';
+      userInterface.style.display = 'none';
+      adminInterface.style.display = 'none';
+    });
+
+    // Regular user upload functionality
     const fileInput = document.getElementById('fileInput');
-    const uploadBox = document.getElementById('uploadBox');
-    const preview = document.getElementById('preview');
-    const previewImage = document.getElementById('previewImage');
-    const loader = document.getElementById('loader');
-    const result = document.getElementById('result');
-    const copyLink = document.getElementById('copyLink');
-    const uploadAnother = document.getElementById('uploadAnother');
-    const tryAgain = document.getElementById('tryAgain');
-    const progressBar = document.getElementById('progressBar');
-    const progress = document.getElementById('progress');
-    const cropperContainer = document.getElementById('cropperContainer');
-    const cropperImage = document.getElementById('cropperImage');
-    const cropButton = document.getElementById('cropButton');
-    const historyList = document.getElementById('historyList');
-
-    let currentFile = null;
-    let cropper;
-
-    // Theme Toggle
-    const themeToggle = document.getElementById('themeToggle');
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-    });
-
-    // Drag-and-Drop Support
-    uploadBox.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadBox.style.background = 'rgba(255, 255, 255, 0.2)';
-    });
-
-    uploadBox.addEventListener('dragleave', () => {
-      uploadBox.style.background = 'transparent';
-    });
-
-    uploadBox.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadBox.style.background = 'transparent';
-      const file = e.dataTransfer.files[0];
-      handleFile(file);
-    });
-
-    // Paste from Clipboard
-    document.addEventListener('paste', (e) => {
-      const file = e.clipboardData.files[0];
-      if (file) handleFile(file);
-    });
-
-    // File Input Change
     fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) handleFile(file);
+      const files = e.target.files;
+      Array.from(files).forEach(file => handleFile(file));
     });
 
-    // Handle File Upload
+    // Handle file upload
     function handleFile(file) {
-      const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
-
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        alert('Only JPEG, PNG, and GIF files are allowed.');
-        return;
-      }
-
-      if (file.size > MAX_SIZE) {
-        alert('File size must be less than 5MB.');
-        return;
-      }
-
-      currentFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
-        previewImage.src = e.target.result;
-        preview.style.display = 'block';
-
-        // Initialize Cropper.js
-        cropperImage.src = e.target.result;
-        cropperContainer.style.display = 'block';
-        cropButton.style.display = 'block';
-
-        cropper = new Cropper(cropperImage, {
-          aspectRatio: 1, // Square crop
-          viewMode: 1,
-        });
+        uploadImage(file);
       };
       reader.readAsDataURL(file);
     }
 
-    // Crop & Upload
-    cropButton.addEventListener('click', () => {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      croppedCanvas.toBlob((blob) => {
-        const croppedFile = new File([blob], 'cropped-image.png', { type: 'image/png' });
-        uploadImage(croppedFile);
-      });
-    });
-
-    // Upload Image to ImgBB
+    // Upload image to ImgBB
     async function uploadImage(file) {
       const API_KEY = "a42d5a374e86bb7a13b3daf1e7a02ae7"; // Replace with your ImgBB API key
       const formData = new FormData();
@@ -388,72 +186,76 @@
 
         const data = await response.json();
         if (data.success) {
-          const imageUrl = data.data.url;
-          result.innerHTML = `<a href="${imageUrl}" target="_blank">${imageUrl}</a>`;
-          copyLink.style.display = 'block';
-          addToHistory(imageUrl);
-        } else {
-          result.innerHTML = 'Upload failed. Please try again.';
-          tryAgain.style.display = 'block';
+          addToUserHistory(data.data.url);
+          addToAdminHistory(data.data.url);
         }
       } catch (error) {
-        console.error('Error uploading image:', error);
-        result.innerHTML = 'Upload failed. Please try again.';
-        tryAgain.style.display = 'block';
+        console.error('Upload error:', error);
       }
     }
 
-    // Add to Upload History
-    let uploadHistory = JSON.parse(localStorage.getItem('uploadHistory')) || [];
-
-    function addToHistory(url) {
-      uploadHistory.push(url);
-      localStorage.setItem('uploadHistory', JSON.stringify(uploadHistory));
-      displayHistory();
+    // Add to user's history
+    function addToUserHistory(url) {
+      let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
+      userHistory.unshift(url);
+      localStorage.setItem('userHistory', JSON.stringify(userHistory));
+      displayUserHistory();
     }
 
-    function displayHistory() {
-      historyList.innerHTML = uploadHistory.map(url => `
+    // Add to admin's history (all uploads)
+    function addToAdminHistory(url) {
+      let adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
+      adminHistory.unshift(url);
+      localStorage.setItem('adminHistory', JSON.stringify(adminHistory));
+      if (adminInterface.style.display === 'block') {
+        displayAdminHistory();
+      }
+    }
+
+    // Display user's history
+    function displayUserHistory() {
+      let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
+      userHistoryList.innerHTML = userHistory.map(url => `
         <div class="history-item">
           <a href="${url}" target="_blank">${url}</a>
         </div>
       `).join('');
     }
 
-    // Copy Link to Clipboard
-    function copyToClipboard() {
-      const link = result.querySelector('a').href;
-      navigator.clipboard.writeText(link).then(() => {
-        alert('Link copied to clipboard!');
-      }).catch(() => {
-        alert('Failed to copy link.');
-      });
+    // Display admin's history (all uploads)
+    function displayAdminHistory() {
+      let adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
+      adminHistoryList.innerHTML = adminHistory.map(url => `
+        <div class="history-item">
+          <a href="${url}" target="_blank">${url}</a>
+        </div>
+      `).join('');
     }
 
-    // Retry Upload
-    function retryUpload() {
-      if (currentFile) {
-        uploadImage(currentFile);
+    // Admin login
+    function adminLogin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+
+      if (username === kishan09.username && password === kishan09.password) {
+        userInterface.style.display = 'none';
+        adminLoginForm.style.display = 'none';
+        adminInterface.style.display = 'block';
+        displayAdminHistory();
+      } else {
+        alert('Invalid credentials');
       }
     }
 
-    // Reset Uploader
-    function resetUploader() {
-      fileInput.value = '';
-      preview.style.display = 'none';
-      result.innerHTML = '';
-      copyLink.style.display = 'none';
-      uploadAnother.style.display = 'none';
-      tryAgain.style.display = 'none';
-      progressBar.style.display = 'none';
-      progress.style.width = '0';
-      cropperContainer.style.display = 'none';
-      cropButton.style.display = 'none';
-      currentFile = null;
+    // Admin logout
+    function logoutAdmin() {
+      userInterface.style.display = 'block';
+      adminLoginForm.style.display = 'none';
+      adminInterface.style.display = 'none';
     }
 
-    // Display History on Page Load
-    displayHistory();
+    // Display user's history on page load
+    displayUserHistory();
   </script>
 </body>
 </html>
